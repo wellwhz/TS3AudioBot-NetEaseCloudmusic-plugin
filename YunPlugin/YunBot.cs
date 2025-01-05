@@ -59,7 +59,8 @@ namespace YunPlugin
             playManager.AfterResourceStarted += PlayManager_AfterResourceStarted;
             playManager.PlaybackStopped += PlayManager_PlaybackStopped;
 
-            if (config.autoPause) {
+            if (config.autoPause)
+            {
                 TS3FullClient.OnEachClientLeftView += OnEachClientLeftView;
                 TS3FullClient.OnEachClientEnterView += OnEachClientEnterView;
                 TS3FullClient.OnEachClientMoved += OnEachClientMoved;
@@ -137,7 +138,8 @@ namespace YunPlugin
                             {
                                 Log.Warn("Cookie update failed");
                             }
-                        } catch (Exception ex)
+                        }
+                        catch (Exception ex)
                         {
                             Log.Error(ex, "Cookie update error");
                         }
@@ -378,6 +380,17 @@ namespace YunPlugin
             return null;
         }
 
+        [Command("yun clear")]
+        public async Task<string> CommandYunClear(PlayManager playManager)
+        {
+            playControl.Clear();
+            if (playManager.IsPlaying)
+            {
+                await playManager.Stop();
+            }
+            return null;
+        }
+
         [Command("yun reload")]
         public Task<string> CommandYunReload()
         {
@@ -530,7 +543,8 @@ namespace YunPlugin
                 {
                     result += $"未登入";
                 }
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 result += $"获取登录信息失败！";
                 Log.Error(e, "GetLoginStatusAasync error");

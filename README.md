@@ -21,7 +21,7 @@
 - `RandomLoopPlay` 随机循环
 
 `neteaseApi` 是网易云 API 地址
- 
+
 `isQrlogin` 是否验证码登录，用于判断是否需要刷新Cookie（不需要修改）
 `cookieUpdateIntervalMin` 刷新Cookie间隔（分钟）
 
@@ -56,23 +56,26 @@ vip 音乐想要先登陆才能播放完整版本:
 4.播放列表中的下一首  
 `!yun next`
 
-5.修改播放模式  
+5.清除所有音乐  
+`!yun clear`
+
+6.修改播放模式  
 `!yun mode [模式选择数字0-3]`  
 `0 = 顺序播放`
 `1 = 顺序循环`
 `2 = 随机播放`
 `3 = 随机循环`
 
-6.查看播放列表
+7.查看播放列表
 `!yun list`
 
-7.查看状态
+8.查看状态
 `!yun status`
 
-8.重载插件配置
+9.重载插件配置
 `!yun reload`
 
-9.让机器人前往当前频道
+10.让机器人前往当前频道
 `!here`
 需要在服务器聊天框发送
 
@@ -93,13 +96,19 @@ vip 音乐想要先登陆才能播放完整版本:
 [COLOR=#00aa00]!yun gedan [歌单名称/歌单网址/歌单ID][/COLOR]
 4.播放列表中的下一首
 [COLOR=#00aa00]!yun next[/COLOR]
-5.播放模式选择【0=顺序播放 1=顺序循环 2=随机 3=随即循环】
+5.暂停当前播放的音乐
+[COLOR=#00aa00]!yun pause[/COLOR]
+6.取消暂停当前播放的音乐
+[COLOR=#00aa00]!yun start[/COLOR]
+7.暂停播放的所有音乐
+[COLOR=#00aa00]!yun stop[/COLOR]
+8.播放模式选择【0=顺序播放 1=顺序循环 2=随机 3=随即循环】
 [COLOR=#00aa00]!yun mode[/COLOR]
-6.登陆账户
+9.登陆账户
 [COLOR=#00aa00]!yun login[/COLOR]
-7.查看播放列表
+10.查看播放列表
 [COLOR=#00aa00]!yun list[/COLOR]
-8.查看状态
+11.查看状态
 [COLOR=#00aa00]!yun status[/COLOR]
 需要注意的是如果歌单歌曲过多需要时间加载（重写后应该只需要几秒），期间[B]一定一定不要[/B]输入其他指令
 ```

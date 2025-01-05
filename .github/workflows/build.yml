@@ -9,18 +9,38 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    strategy:
+      matrix:
+        targets: ["win-x64", "linux-x64", "linux-arm", "linux-arm64"]
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download TS3AudioBot DLLs
-        run: |
-          Invoke-WebRequest -Uri "https://splamy.de/api/nightly/projects/ts3ab/master/download" -OutFile "ts3ab.zip"
+      - name: Download TS3AudioBot for Windows
+        if: ${{matrix.targets == 'win-x64'}}
+        uses: robinraju/release-downloader@v1.11
+        with:
+          repository: wellwhz/TS3AudioBot
+          latest: true
+          out-file-path: ./ts3ab
+          extract: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fileName: TS3AudioBot_${{ matrix.targets }}.zip
 
-      - name: Extract DLLs
+      - name: Download TS3AudioBot for Linux
+        if: ${{matrix.targets != 'win-x64'}}
+        uses: robinraju/release-downloader@v1.11
+        with:
+          repository: wellwhz/TS3AudioBot
+          latest: true
+          out-file-path: ./ts3ab
+          extract: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fileName: TS3AudioBot_${{ matrix.targets }}.tar.gz
+
+      - name: Copy DLLs
         run: |
-          Expand-Archive -Path "ts3ab.zip" -DestinationPath "ts3ab"
           Copy-Item "ts3ab/TS3AudioBot.dll" -Destination "YunPlugin/lib/TS3AudioBot.dll" -Force
           Copy-Item "ts3ab/TSLib.dll" -Destination "YunPlugin/lib/TSLib.dll" -Force
 
@@ -35,6 +55,6 @@ jobs:
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: YunPlugin-Build
+          name: YunPlugin_${{ matrix.targets }}
           path: |
             YunPlugin/bin/Release/

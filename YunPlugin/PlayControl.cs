@@ -88,6 +88,11 @@ public class PlayControl
         return songList;
     }
 
+    public void Clear()
+    {
+        songList.Clear(); ;
+    }
+
     public void AddMusic(MusicInfo musicInfo, bool insert = true)
     {
         songList.RemoveAll(m => m.Id == musicInfo.Id);
@@ -143,7 +148,8 @@ public class PlayControl
             try
             {
                 await MainCommands.CommandBotAvatarSet(ts3Client, musicInfo.Image);
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Log.Error(e, "Set avatar error");
             }
