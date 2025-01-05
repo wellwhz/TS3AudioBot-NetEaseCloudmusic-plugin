@@ -1,0 +1,117 @@
+name: Release plugin
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        targets: ["win-x64", "linux-x64", "linux-arm", "linux-arm64"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download TS3AudioBot for Windows
+        if: ${{matrix.targets == 'win-x64'}}
+        uses: robinraju/release-downloader@v1.11
+        with:
+          repository: wellwhz/TS3AudioBot
+          latest: true
+          out-file-path: ./ts3ab
+          extract: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fileName: TS3AudioBot_${{ matrix.targets }}.zip
+
+      - name: Download TS3AudioBot for Linux
+        if: ${{matrix.targets != 'win-x64'}}
+        uses: robinraju/release-downloader@v1.11
+        with:
+          repository: wellwhz/TS3AudioBot
+          latest: true
+          out-file-path: ./ts3ab
+          extract: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fileName: TS3AudioBot_${{ matrix.targets }}.tar.gz
+
+      - name: Copy DLLs
+        run: |
+          Copy-Item "ts3ab/TS3AudioBot.dll" -Destination "YunPlugin/lib/TS3AudioBot.dll" -Force
+          Copy-Item "ts3ab/TSLib.dll" -Destination "YunPlugin/lib/TSLib.dll" -Force
+
+      - name: Restore NuGet packages
+        run: |
+          dotnet restore "YunPlugin/YunPlugin.sln"
+
+      - name: Build solution
+        run: |
+          dotnet build "YunPlugin/YunPlugin.sln" --configuration Release
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: YunPlugin_${{ matrix.targets }}
+          path: |
+            YunPlugin/bin/Release/
+
+  upload-windows-to-release:
+    needs:
+      - build
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        targets: ["win-x64"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: YunPlugin_${{ matrix.targets }}
+          path: artifact
+
+      - run: |
+          cp README.md artifact/
+
+      - run: |
+          zip -r ../YunPlugin_${{ matrix.targets }}.zip *
+        working-directory: artifact
+
+      - uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            YunPlugin_${{ matrix.targets }}.zip
+
+  upload-linux-to-release:
+    needs:
+      - build
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        targets: ["linux-x64", "linux-arm", "linux-arm64"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: YunPlugin_${{ matrix.targets }}
+          path: artifact
+
+      - run: |
+          cp README.md artifact/
+
+      - run: |
+          tar -zcvf ../YunPlugin_${{ matrix.targets }}.tar.gz *
+        working-directory: artifact
+
+      - uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            YunPlugin_${{ matrix.targets }}.tar.gz
